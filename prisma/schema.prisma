@@ -1,0 +1,137 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  PASSENGER
+  DRIVER
+  ADMIN
+}
+
+enum DriverVerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum DriverAvailabilityStatus {
+  OFFLINE
+  AVAILABLE
+  BUSY
+}
+
+enum RideStatus {
+  REQUESTED
+  SEARCHING
+  DRIVER_ASSIGNED
+  DRIVER_ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum VehicleType {
+  SEDAN
+  SUV
+  HATCHBACK
+  MINIVAN
+  MOTORCYCLE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String   @unique
+
+  roles     UserRole[]
+
+  driver    Driver?
+
+  ridesAsPassenger Ride[] @relation("PassengerRides")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Driver {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+
+  licenseNumber        String   @unique
+  verificationStatus   DriverVerificationStatus @default(PENDING)
+  availabilityStatus   DriverAvailabilityStatus @default(OFFLINE)
+
+  rejectionReason      String?
+  verifiedAt           DateTime?
+  verifiedBy           String?
+
+  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicles             Vehicle[]
+
+  rides                Ride[] @relation("DriverRides")
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Vehicle {
+  id          String      @id @default(uuid())
+  driverId    String
+
+  plateNumber String      @unique
+  model       String
+  type        VehicleType
+  year        Int?
+
+  driver      Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  rides       Ride[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Ride {
+  id                    String   @id @default(uuid())
+
+  passengerId           String
+  driverId              String?
+  vehicleId             String?
+
+  pickupLatitude        Decimal  @db.Decimal(10, 7)
+  pickupLongitude       Decimal  @db.Decimal(10, 7)
+
+  destinationLatitude   Decimal  @db.Decimal(10, 7)
+  destinationLongitude  Decimal  @db.Decimal(10, 7)
+
+  fare                  Decimal? @db.Decimal(12, 2)
+
+  status                RideStatus @default(REQUESTED)
+
+  requestedAt           DateTime @default(now())
+  startedAt             DateTime?
+  completedAt           DateTime?
+
+  passenger             User     @relation("PassengerRides", fields: [passengerId], references: [id])
+
+  driver                Driver?  @relation("DriverRides", fields: [driverId], references: [id])
+
+  vehicle               Vehicle? @relation(fields: [vehicleId], references: [id])
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([passengerId])
+  @@index([driverId])
+  @@index([vehicleId])
+  @@index([status])
+}
