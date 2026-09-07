@@ -45,15 +45,15 @@ enum VehicleType {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String   @unique
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+  phone    String @unique
 
-  roles     UserRole[]
+  roles UserRole[]
 
-  driver    Driver?
+  driver Driver?
 
   ridesAsPassenger Ride[] @relation("PassengerRides")
 
@@ -62,73 +62,73 @@ model User {
 }
 
 model Driver {
-  id                   String   @id @default(uuid())
-  userId               String   @unique
+  id     String @id @default(uuid())
+  userId String @unique
 
-  licenseNumber        String   @unique
-  verificationStatus   DriverVerificationStatus @default(PENDING)
-  availabilityStatus   DriverAvailabilityStatus @default(OFFLINE)
+  licenseNumber      String                   @unique
+  verificationStatus DriverVerificationStatus @default(PENDING)
+  availabilityStatus DriverAvailabilityStatus @default(OFFLINE)
 
-  rejectionReason      String?
-  verifiedAt           DateTime?
-  verifiedBy           String?
+  rejectionReason String?
+  verifiedAt      DateTime?
+  verifiedBy      String?
 
-  user                 User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  vehicles             Vehicle[]
+  vehicles Vehicle[]
 
-  rides                Ride[] @relation("DriverRides")
+  rides Ride[] @relation("DriverRides")
 
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Vehicle {
-  id          String      @id @default(uuid())
-  driverId    String
+  id       String @id @default(uuid())
+  driverId String
 
   plateNumber String      @unique
   model       String
   type        VehicleType
   year        Int?
 
-  driver      Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
 
-  rides       Ride[]
+  rides Ride[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Ride {
-  id                    String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  passengerId           String
-  driverId              String?
-  vehicleId             String?
+  passengerId String
+  driverId    String?
+  vehicleId   String?
 
-  pickupLatitude        Decimal  @db.Decimal(10, 7)
-  pickupLongitude       Decimal  @db.Decimal(10, 7)
+  pickupLatitude  Decimal @db.Decimal(10, 7)
+  pickupLongitude Decimal @db.Decimal(10, 7)
 
-  destinationLatitude   Decimal  @db.Decimal(10, 7)
-  destinationLongitude  Decimal  @db.Decimal(10, 7)
+  destinationLatitude  Decimal @db.Decimal(10, 7)
+  destinationLongitude Decimal @db.Decimal(10, 7)
 
-  fare                  Decimal? @db.Decimal(12, 2)
+  fare Decimal? @db.Decimal(12, 2)
 
-  status                RideStatus @default(REQUESTED)
+  status RideStatus @default(REQUESTED)
 
-  requestedAt           DateTime @default(now())
-  startedAt             DateTime?
-  completedAt           DateTime?
+  requestedAt DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
 
-  passenger             User     @relation("PassengerRides", fields: [passengerId], references: [id])
+  passenger User @relation("PassengerRides", fields: [passengerId], references: [id])
 
-  driver                Driver?  @relation("DriverRides", fields: [driverId], references: [id])
+  driver Driver? @relation("DriverRides", fields: [driverId], references: [id])
 
-  vehicle               Vehicle? @relation(fields: [vehicleId], references: [id])
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([passengerId])
   @@index([driverId])
