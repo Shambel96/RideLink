@@ -1,4 +1,10 @@
-import { PrismaClient, UserRole, DriverVerificationStatus, VehicleType, RideStatus } from '@prisma/client';
+import {
+  PrismaClient,
+  UserRole,
+  DriverVerificationStatus,
+  VehicleType,
+  RideStatus,
+} from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -88,7 +94,12 @@ async function main() {
       year: 2020,
     },
   });
-  console.log('✅ Approved driver:', driverUser1.email, '| Vehicle:', vehicle1.plateNumber);
+  console.log(
+    '✅ Approved driver:',
+    driverUser1.email,
+    '| Vehicle:',
+    vehicle1.plateNumber,
+  );
 
   // 5. Pending driver
   const driverUser2 = await prisma.user.upsert({
@@ -124,7 +135,7 @@ async function main() {
       pickupLongitude: 38.7636,
       destinationLatitude: 9.0272,
       destinationLongitude: 38.7468,
-      fare: 47.50,
+      fare: 47.5,
       currency: 'ETB',
       status: RideStatus.COMPLETED,
       requestedAt: new Date(Date.now() - 3600_000),
