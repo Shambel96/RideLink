@@ -7,7 +7,7 @@ export function haversineDistance(
   lat1: number,
   lon1: number,
   lat2: number,
-  lon2: number
+  lon2: number,
 ): number {
   const R = 6371; // Earth radius in km
   const dLat = toRad(lat2 - lat1);
@@ -36,9 +36,12 @@ export function calculateFareEstimate(
   destLat: number,
   destLon: number,
   baseRate = 15,
-  perKmRate = 8
+  perKmRate = 8,
 ): { distanceKm: number; fare: number } {
-  const distanceKm = Math.round(haversineDistance(pickupLat, pickupLon, destLat, destLon) * 100) / 100;
+  const distanceKm =
+    Math.round(
+      haversineDistance(pickupLat, pickupLon, destLat, destLon) * 100,
+    ) / 100;
   const fare = Math.round((baseRate + distanceKm * perKmRate) * 100) / 100;
   return { distanceKm, fare };
 }
