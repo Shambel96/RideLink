@@ -1,31 +1,29 @@
 # RideLink
 
-Author: Shambel Bekele
+RideLink is a full-stack ride-hailing platform designed for passengers, drivers, and administrators. It supports ride requests, real-time driver assignment, vehicle management, JWT-based authentication, and role-based access across a modern monorepo application.
 
-RideLink is a full-stack ride-hailing platform designed for passengers, drivers, and administrators. The system supports ride requests, driver registration and verification, live location-aware trip workflows, vehicle management, and role-based dashboards across a modern web application.
-
-The project combines a NestJS backend, a React + Vite frontend, Prisma ORM, PostgreSQL, and Docker-based local infrastructure to deliver a production-ready monorepo architecture for a ride-sharing business.
+The project combines a NestJS backend, a React + Vite frontend, Prisma ORM, PostgreSQL, and Docker-based local infrastructure to deliver a scalable and maintainable ride-sharing platform.
 
 ## Overview
 
-RideLink provides a role-based mobility platform with three core user experiences:
+RideLink provides three core user journeys:
 
-- Passengers can register, log in, request rides, track trip status, and review ride history.
-- Drivers can register their profile, add vehicles, set availability, accept trip requests, and manage active rides.
-- Administrators can review driver verification, manage user activity, and monitor ride operations.
+- Passengers can sign up, log in, request rides, and track trip progress.
+- Drivers can register profiles, manage vehicles, accept requests, and update ride status.
+- Administrators can review driver onboarding, oversee operations, and monitor system activity.
 
-## Key Features
+## Features
 
 - Secure authentication and authorization with JWT access and refresh tokens
-- Role-based access control for passenger, driver, and admin flows
-- Driver registration and verification workflow with approval/rejection states
+- Role-based access control for passenger, driver, and admin roles
+- Driver registration and verification workflow
 - Vehicle management for registered drivers
-- Ride request lifecycle from request to completion
-- Geographic trip data with pickup and destination coordinates
-- Admin dashboard for overview, users, drivers, and rides
-- Real-time client-side interaction patterns for ride and driver lifecycle operations
-- Responsive single-page frontend experience built with React and Tailwind CSS
-- API documentation via Swagger/OpenAPI
+- Ride lifecycle management from request to completion
+- Geolocation-aware trip flow with pickup and destination coordinates
+- Admin dashboard for overview, user management, and ride monitoring
+- Responsive frontend built with React, Vite, and Tailwind CSS
+- OpenAPI/Swagger API documentation
+- Local development setup using Docker and PostgreSQL
 
 ## Tech Stack
 
@@ -35,22 +33,21 @@ RideLink provides a role-based mobility platform with three core user experience
 - TypeScript
 - Prisma ORM
 - PostgreSQL
-- JWT authentication
-- Swagger API documentation
+- Passport + JWT authentication
+- Swagger/OpenAPI
 
 ### Frontend
 
-- React 19
+- React
 - Vite
 - TypeScript
 - Tailwind CSS
 - React Router
-- Zustand for client state
-- React Query for data fetching
-- Leaflet + map-based UI support
-- Socket.IO client for live communication
+- Zustand
+- Leaflet map support
+- Socket-based real-time interaction support
 
-### DevOps / Local Infrastructure
+### Infrastructure
 
 - Docker Compose
 - PostgreSQL container
@@ -60,17 +57,17 @@ RideLink provides a role-based mobility platform with three core user experience
 
 ```text
 RideLink/
-├── Frontend/                  # React frontend application
+├── Frontend/                  # React frontend for the app
 │   ├── src/
 │   ├── public/
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── ...
 ├── prisma/
-│   ├── schema.prisma          # Database schema and enums
-│   ├── seed.ts               # Demo seed data
+│   ├── schema.prisma          # Database schema
+│   ├── seed.ts               # Seed data for demo accounts
 │   └── migrations/
-├── src/                       # NestJS application
+├── src/                      # NestJS backend
 │   ├── admin/
 │   ├── auth/
 │   ├── common/
@@ -84,6 +81,7 @@ RideLink/
 │   ├── main.ts
 │   └── ...
 ├── test/
+├── .env.example              # Environment template
 ├── docker-compose.yml
 ├── package.json
 ├── tsconfig.json
@@ -93,57 +91,18 @@ RideLink/
 └── ...
 ```
 
-## System Design Highlights
-
-### Role Model
-
-The application supports three user roles:
-
-- PASSENGER
-- DRIVER
-- ADMIN
-
-### Core Domain Entities
-
-- User
-- Driver
-- Vehicle
-- Ride
-- RefreshToken
-
-### Ride Workflow
-
-A ride progresses through states such as:
-
-- REQUESTED
-- SEARCHING
-- DRIVER_ASSIGNED
-- DRIVER_ARRIVED
-- IN_PROGRESS
-- COMPLETED
-- CANCELLED
-
-### Driver Lifecycle
-
-Drivers can move through onboarding and verification states:
-
-- PENDING
-- APPROVED
-- REJECTED
-- SUSPENDED
-
 ## Prerequisites
 
-Before running the project, make sure you have installed:
+Before running the application, make sure you have:
 
-- Node.js 18+ or newer
+- Node.js 18 or later
 - npm
 - Docker and Docker Compose
-- PostgreSQL client tools (optional, if you prefer manual DB inspection)
+- PostgreSQL client tools if you want to inspect the database manually
 
-## Environment Configuration
+## Environment Setup
 
-Create a root environment file in the project root with the required variables:
+Create a `.env` file in the project root using the values from `.env.example`:
 
 ```env
 DATABASE_URL="postgresql://postgres:1234@localhost:5432/ride_link?schema=public"
@@ -158,11 +117,9 @@ FARE_BASE_RATE="15"
 FARE_PER_KM="8"
 ```
 
-> The application also supports a default fallback for many values if env vars are not set, but production deployments should always use explicit secrets and secure configuration values.
+> This project provides safe defaults for local development, but production deployments should use secure secrets and environment-specific configuration.
 
-## Local Setup for New Developers
-
-If you are cloning this project from GitHub, follow these steps exactly:
+## Local Development Setup
 
 ### 1. Clone the repository
 
@@ -171,14 +128,14 @@ git clone https://github.com/shambel96/RideLink.git
 cd RideLink
 ```
 
-### 2. Install project dependencies
+### 2. Install dependencies
 
 ```bash
 npm install
 cd Frontend && npm install && cd ..
 ```
 
-### 3. Start the database
+### 3. Start the database with Docker
 
 ```bash
 docker compose up -d
@@ -191,29 +148,18 @@ This starts:
 
 ### 4. Configure environment variables
 
-Create a `.env` file in the project root with:
-
-```env
-DATABASE_URL="postgresql://postgres:1234@localhost:5432/ride_link?schema=public"
-PORT=3000
-CORS_ORIGIN="http://localhost:5173"
-JWT_ACCESS_SECRET="your-access-secret"
-JWT_REFRESH_SECRET="your-refresh-secret"
-JWT_ACCESS_EXPIRES_IN="15m"
-JWT_REFRESH_EXPIRES_IN="7d"
-FARE_CURRENCY="ETB"
-FARE_BASE_RATE="15"
-FARE_PER_KM="8"
+```bash
+cp .env.example .env
 ```
 
-### 5. Generate Prisma client and apply schema
+### 5. Generate Prisma client and apply migrations
 
 ```bash
 npx prisma generate
 npx prisma migrate dev --name init
 ```
 
-If the database already exists and you only want to sync the schema, use:
+If the database already exists, you can sync schema changes with:
 
 ```bash
 npx prisma migrate deploy
@@ -225,7 +171,7 @@ npx prisma migrate deploy
 npm run seed
 ```
 
-This creates sample users for login and testing, including an admin, passengers, approved driver, and pending driver.
+This creates sample users for testing, including admin, passenger, approved driver, and pending driver accounts.
 
 ## Running the Application
 
@@ -235,10 +181,10 @@ This creates sample users for login and testing, including an admin, passengers,
 npm run start:dev
 ```
 
-The backend runs at:
+The backend is available at:
 
 - API base: http://localhost:3000/api/v1
-- Swagger docs: http://localhost:3000/api/docs
+- Swagger UI: http://localhost:3000/api/docs
 
 ### Frontend
 
@@ -251,52 +197,27 @@ The frontend runs at:
 
 - http://localhost:5173
 
-## Quick Start Summary
-
-For a developer cloning the repo for the first time, the recommended flow is:
-
-```bash
-git clone https://github.com/shambel96/RideLink.git
-cd RideLink
-npm install
-cd Frontend && npm install && cd ..
-cp .env.example .env
-# or create a .env file with the values shown above
-docker compose up -d
-npx prisma generate
-npx prisma migrate dev --name init
-npm run seed
-npm run start:dev
-```
-
-Then in a second terminal:
-
-```bash
-cd Frontend
-npm run dev
-```
-
 ## Default Demo Accounts
 
-The seeded credentials are:
+The seeded demo accounts are:
 
 ```text
-Admin:           admin@ridelink.com      / Admin@1234
-Passenger 1:     abebe@example.com       / Passenger@123
-Passenger 2:     tigist@example.com      / Passenger@123
+Admin:           admin@ridelink.com       / Admin@1234
+Passenger 1:     abebe@example.com        / Passenger@123
+Passenger 2:     tigist@example.com       / Passenger@123
 Driver (approved): kebede.driver@example.com / Driver@1234
 Driver (pending):  selam.driver@example.com / Driver@1234
 ```
 
 ## API Documentation
 
-The backend exposes Swagger/OpenAPI documentation at:
+Swagger/OpenAPI documentation is available at:
 
 ```text
 http://localhost:3000/api/docs
 ```
 
-This includes documented endpoints for:
+The API includes endpoints for:
 
 - Authentication
 - Users
@@ -305,98 +226,84 @@ This includes documented endpoints for:
 - Rides
 - Admin operations
 
-## Common Commands
+## Available Scripts
 
 ### Root project
 
 ```bash
-npm run start           # Start NestJS in normal mode
-npm run start:dev       # Start NestJS in watch mode
+npm run start           # Start the NestJS app
+npm run start:dev       # Start in watch mode
 npm run start:debug     # Start in debug mode
 npm run build           # Build the backend
 npm run test            # Run Jest tests
 npm run test:e2e       # Run end-to-end tests
-npm run lint           # Lint project files
-npm run seed           # Seed database with demo data
+npm run lint           # Lint the project
+npm run seed           # Seed database demo data
 ```
 
 ### Frontend
 
 ```bash
 cd Frontend
-npm run dev            # Start Vite dev server
-npm run build          # Production build
-npm run preview        # Preview production build
-npm run lint           # Lint frontend project
+npm run dev            # Start the Vite frontend
+npm run build          # Build the frontend for production
+npm run preview        # Preview the production build
+npm run lint           # Lint frontend files
 ```
 
-## Contributing
+## Contribution Guidelines
 
-Contributions are welcome. To contribute to this project professionally and consistently:
+Contributions are welcome. Please follow a clean and consistent workflow:
 
-### 1. Fork or clone the repository
-
-```bash
-git clone https://github.com/shambel96/RideLink.git
-cd RideLink
-```
-
-### 2. Create a dedicated branch
-
-Use a descriptive branch name for the work you are doing:
+### 1. Create a feature branch
 
 ```bash
 git checkout -b feature/driver-verification-flow
 ```
 
-Examples:
+### 2. Make focused changes
 
-- `feature/add-payment-flow`
-- `bugfix/fix-ride-status-update`
-- `refactor/frontend-dashboard-layout`
+Keep commits small and meaningful. Update documentation whenever behavior changes.
 
-### 3. Make your changes
+### 3. Use conventional commit messages
 
-Keep commits focused and clear. A good commit message should describe the effect of the change.
+Use the standard format below:
 
 ```bash
 git add .
 git commit -m "feat: add driver verification dashboard"
 ```
 
-### 4. Push your branch
+Typical commit types include:
+
+- `feat`: new feature
+- `fix`: bug fix
+- `docs`: documentation update
+- `refactor`: code cleanup without behavior change
+- `chore`: maintenance tasks
+
+### 4. Push and open a pull request
 
 ```bash
 git push origin feature/driver-verification-flow
 ```
 
-### 5. Open a pull request
-
-Create a pull request from your branch into the main project branch and include:
-
-- a clear summary of the change
-- what problem it solves
-- screenshots or notes if the UI changed
-- any setup or migration considerations
-
-### Contribution guidelines
-
-- keep code clean and readable
-- follow the existing project structure
-- update documentation when behavior changes
-- test relevant functionality before submitting
-- avoid committing debug code or secrets
+Include a clear summary of the change, why it was needed, and any migration or setup notes in the PR description.
 
 ## Production Notes
 
-For production deployment, consider:
+For deployment, consider:
 
-- using environment-specific secrets instead of hardcoded values
+- using environment-specific secrets instead of local defaults
 - securing JWT signing keys and refresh token configuration
-- enabling production-grade database credentials and backups
-- configuring reverse proxy, HTTPS, and CORS constraints
-- using a managed PostgreSQL service instead of the local Docker database
-- validating rate limiting and request throttling for public endpoints
+- using a managed PostgreSQL service in production
+- enabling HTTPS and restricting CORS appropriately
+- configuring backups, monitoring, and logging
+- validating rate limiting and request throttling for public routes
+
+## License
+
+This project is currently configured for internal or project-specific use and does not include a public license declaration.
 
 ## License
 
