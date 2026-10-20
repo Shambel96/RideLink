@@ -1,20 +1,35 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Menu, X, Car, User, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
+import {
+  Shield,
+  Menu,
+  X,
+  Car,
+  User,
+  LogOut,
+  ChevronDown,
+  LayoutDashboard,
+} from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { Modal } from '../components/ui/Modal';
 
 export const Navbar: React.FC = () => {
-  const { user, isAuthenticated, activeRole, setActiveRole, logout } = useAuthStore();
+  const { user, isAuthenticated, activeRole, setActiveRole, logout } =
+    useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
+
+  const openLogoutModal = () => setLogoutModalOpen(true);
+  const closeLogoutModal = () => setLogoutModalOpen(false);
 
   const getDashboardLink = () => {
     if (!user) return '/login';
@@ -33,8 +48,12 @@ export const Navbar: React.FC = () => {
               <Car className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div className="flex items-baseline">
-              <span className="text-xl font-extrabold tracking-tight text-slate-950">Ride</span>
-              <span className="text-xl font-extrabold tracking-tight text-electric-600">Link</span>
+              <span className="text-xl font-extrabold tracking-tight text-slate-950">
+                Ride
+              </span>
+              <span className="text-xl font-extrabold tracking-tight text-electric-600">
+                Link
+              </span>
               <span className="w-1.5 h-1.5 rounded-full bg-electric-500 ml-0.5" />
             </div>
           </Link>
@@ -84,7 +103,11 @@ export const Navbar: React.FC = () => {
                             : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
-                        {role === 'ADMIN' ? 'Admin' : role === 'DRIVER' ? 'Driver' : 'Passenger'}
+                        {role === 'ADMIN'
+                          ? 'Admin'
+                          : role === 'DRIVER'
+                            ? 'Driver'
+                            : 'Passenger'}
                       </button>
                     ))}
                   </div>
@@ -92,7 +115,11 @@ export const Navbar: React.FC = () => {
 
                 {/* Dashboard button */}
                 <Link to={getDashboardLink()}>
-                  <Button variant="secondary" size="sm" leftIcon={<LayoutDashboard className="w-4 h-4" />}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    leftIcon={<LayoutDashboard className="w-4 h-4" />}
+                  >
                     Dashboard
                   </Button>
                 </Link>
@@ -104,8 +131,12 @@ export const Navbar: React.FC = () => {
                     className="flex items-center gap-2 p-1.5 pl-3 pr-2 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors"
                   >
                     <div className="text-left">
-                      <p className="text-xs font-bold text-slate-900 leading-tight">{user.name}</p>
-                      <p className="text-[10px] text-slate-500 capitalize">{activeRole?.toLowerCase()}</p>
+                      <p className="text-xs font-bold text-slate-900 leading-tight">
+                        {user.name}
+                      </p>
+                      <p className="text-[10px] text-slate-500 capitalize">
+                        {activeRole?.toLowerCase()}
+                      </p>
                     </div>
                     <ChevronDown className="w-4 h-4 text-slate-400" />
                   </button>
@@ -113,8 +144,14 @@ export const Navbar: React.FC = () => {
                   {userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                       <div className="px-4 py-2 border-b border-slate-100">
-                        <p className="text-xs font-semibold text-slate-900">{user.email}</p>
-                        <Badge status={activeRole || 'PASSENGER'} size="sm" className="mt-1" />
+                        <p className="text-xs font-semibold text-slate-900">
+                          {user.email}
+                        </p>
+                        <Badge
+                          status={activeRole || 'PASSENGER'}
+                          size="sm"
+                          className="mt-1"
+                        />
                       </div>
                       <Link
                         to="/profile"
@@ -127,7 +164,7 @@ export const Navbar: React.FC = () => {
                       <button
                         onClick={() => {
                           setUserDropdownOpen(false);
-                          handleLogout();
+                          openLogoutModal();
                         }}
                         className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50"
                       >
@@ -161,7 +198,11 @@ export const Navbar: React.FC = () => {
               className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -205,7 +246,7 @@ export const Navbar: React.FC = () => {
                 className="w-full text-rose-600 border-rose-200"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  handleLogout();
+                  openLogoutModal();
                 }}
               >
                 Sign Out
@@ -227,6 +268,30 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       )}
+
+      <Modal
+        isOpen={logoutModalOpen}
+        onClose={closeLogoutModal}
+        title="Sign out of your account?"
+        description="You’ll be signed out of your current RideLink session and redirected to the login page."
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={closeLogoutModal}>
+              Stay Signed In
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={async () => {
+                closeLogoutModal();
+                await handleLogout();
+              }}
+            >
+              Sign Out
+            </Button>
+          </>
+        }
+      ></Modal>
     </header>
   );
 };
