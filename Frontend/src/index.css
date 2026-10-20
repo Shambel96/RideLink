@@ -13,6 +13,90 @@
   }
 }
 
+/* Night mode is limited to authenticated dashboard pages. */
+.dashboard-theme-dark {
+  background-color: #0b1120;
+  color: #e2e8f0;
+}
+.dashboard-theme-dark .dashboard-header {
+  background-color: #111827;
+  border-color: #273449;
+}
+.dashboard-theme-dark .dashboard-main {
+  color: #e2e8f0;
+}
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="bg-white"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="bg-slate-50"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="bg-slate-100"] {
+  background-color: #151f30;
+}
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="border-slate-100"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="border-slate-200"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="border-slate-300"] {
+  border-color: #334155;
+}
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="text-slate-950"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="text-slate-900"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="text-slate-800"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="text-slate-700"] {
+  color: #e2e8f0;
+}
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="text-slate-600"],
+.dashboard-theme-dark .dashboard-main :not(aside)[class~="text-slate-500"] {
+  color: #a8b5c7;
+}
+.dashboard-theme-dark .dashboard-main [class~="bg-electric-500"][class~="text-slate-950"] {
+  color: #0f172a;
+}
+.dashboard-theme-dark .dashboard-main input:not([type="checkbox"]),
+.dashboard-theme-dark .dashboard-main select,
+.dashboard-theme-dark .dashboard-main textarea {
+  background-color: #111827;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+.dashboard-theme-dark .dashboard-main input::placeholder,
+.dashboard-theme-dark .dashboard-main textarea::placeholder {
+  color: #94a3b8;
+}
+.dashboard-theme-dark .dashboard-header button {
+  color: #cbd5e1;
+}
+.dashboard-theme-dark .dashboard-header button[class~="bg-electric-500"] {
+  color: #0f172a;
+}
+.dashboard-theme-dark .dashboard-header button[class~="bg-white"] {
+  color: #0f172a;
+}
+
+/* The landing page shares the dashboard's saved preference independently. */
+.landing-theme-dark {
+  background-color: #0b1120;
+}
+.landing-theme-dark .landing-content {
+  color: #e2e8f0;
+}
+.landing-theme-dark .landing-content [class~="bg-white"],
+.landing-theme-dark .landing-content [class~="bg-slate-50"],
+.landing-theme-dark .landing-content [class~="bg-slate-100"] {
+  background-color: #151f30;
+}
+.landing-theme-dark .landing-content [class~="border-slate-100"],
+.landing-theme-dark .landing-content [class~="border-slate-200"],
+.landing-theme-dark .landing-content [class~="border-slate-300"] {
+  border-color: #334155;
+}
+.landing-theme-dark .landing-content [class~="text-slate-950"],
+.landing-theme-dark .landing-content [class~="text-slate-900"],
+.landing-theme-dark .landing-content [class~="text-slate-800"],
+.landing-theme-dark .landing-content [class~="text-slate-700"] {
+  color: #e2e8f0;
+}
+.landing-theme-dark .landing-content [class~="text-slate-600"],
+.landing-theme-dark .landing-content [class~="text-slate-500"] {
+  color: #a8b5c7;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

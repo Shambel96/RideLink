@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Car,
@@ -20,6 +20,16 @@ export const LandingPage: React.FC = () => {
   const { isAuthenticated, user } = useAuthStore();
   const [pickup, setPickup] = useState('Bole Medhanialem, Addis Ababa');
   const [destination, setDestination] = useState('Meskel Square, Addis Ababa');
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('ridelink-theme') === 'dark',
+  );
+  useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      setDarkMode((event as CustomEvent<boolean>).detail);
+    };
+    window.addEventListener('ridelink-theme-change', handleThemeChange);
+    return () => window.removeEventListener('ridelink-theme-change', handleThemeChange);
+  }, []);
 
   const shouldShowDriverSignIn =
     isAuthenticated && user ? !user.roles.includes('DRIVER') : false;
@@ -32,7 +42,7 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="relative overflow-hidden bg-slate-50">
+    <div className={`landing-page relative overflow-hidden ${darkMode ? 'landing-theme-dark' : 'bg-slate-50'}`}>
       {/* Hero Section */}
       <section className="relative bg-slate-950 text-white pt-20 pb-28 lg:pt-28 lg:pb-36 overflow-hidden">
         {/* Subtle grid pattern background */}
@@ -231,7 +241,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* How it Works Section */}
-      <section className="py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="landing-content py-20 lg:py-28 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
             Effortless Mobility
