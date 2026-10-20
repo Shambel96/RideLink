@@ -21,10 +21,12 @@ import {
 import { useAuthStore } from '../stores/authStore';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
+import { Modal } from '../components/ui/Modal';
 
 export const DashboardLayout: React.FC = () => {
   const { user, activeRole, setActiveRole, logout } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -32,6 +34,9 @@ export const DashboardLayout: React.FC = () => {
     await logout();
     navigate('/login');
   };
+
+  const openLogoutModal = () => setLogoutModalOpen(true);
+  const closeLogoutModal = () => setLogoutModalOpen(false);
 
   const passengerLinks = [
     { label: 'Overview', to: '/passenger', icon: Compass },
@@ -43,7 +48,11 @@ export const DashboardLayout: React.FC = () => {
   const driverLinks = [
     { label: 'Driver Portal', to: '/driver', icon: Compass },
     { label: 'Live Requests', to: '/driver/requests', icon: Radio },
-    { label: 'Availability & GPS', to: '/driver/availability', icon: CheckCircle2 },
+    {
+      label: 'Availability & GPS',
+      to: '/driver/availability',
+      icon: CheckCircle2,
+    },
     { label: 'My Vehicles', to: '/driver/vehicles', icon: Car },
     { label: 'Ride History', to: '/driver/history', icon: History },
     { label: 'Verification Status', to: '/driver/onboarding', icon: FileCheck },
@@ -62,8 +71,8 @@ export const DashboardLayout: React.FC = () => {
     activeRole === 'ADMIN'
       ? adminLinks
       : activeRole === 'DRIVER'
-      ? driverLinks
-      : passengerLinks;
+        ? driverLinks
+        : passengerLinks;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
@@ -89,7 +98,9 @@ export const DashboardLayout: React.FC = () => {
             </div>
             <div className="flex items-baseline">
               <span className="text-xl font-extrabold text-white">Ride</span>
-              <span className="text-xl font-extrabold text-electric-500">Link</span>
+              <span className="text-xl font-extrabold text-electric-500">
+                Link
+              </span>
             </div>
           </Link>
           <button
@@ -123,7 +134,11 @@ export const DashboardLayout: React.FC = () => {
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  {role === 'ADMIN' ? 'Admin' : role === 'DRIVER' ? 'Driver' : 'Rider'}
+                  {role === 'ADMIN'
+                    ? 'Admin'
+                    : role === 'DRIVER'
+                      ? 'Driver'
+                      : 'Rider'}
                 </button>
               ))}
             </div>
@@ -149,12 +164,16 @@ export const DashboardLayout: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <Icon
                     className={`w-4 h-4 ${
-                      isActive ? 'text-electric-500 stroke-[2.2]' : 'text-slate-400'
+                      isActive
+                        ? 'text-electric-500 stroke-[2.2]'
+                        : 'text-slate-400'
                     }`}
                   />
                   <span>{item.label}</span>
                 </div>
-                {isActive && <ChevronRight className="w-4 h-4 text-electric-500" />}
+                {isActive && (
+                  <ChevronRight className="w-4 h-4 text-electric-500" />
+                )}
               </Link>
             );
           })}
@@ -168,12 +187,16 @@ export const DashboardLayout: React.FC = () => {
                 {user?.name.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white truncate">{user?.name}</p>
-                <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
+                <p className="text-xs font-bold text-white truncate">
+                  {user?.name}
+                </p>
+                <p className="text-[11px] text-slate-400 truncate">
+                  {user?.email}
+                </p>
               </div>
             </div>
             <button
-              onClick={handleLogout}
+              onClick={openLogoutModal}
               className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
               title="Sign out"
               aria-label="Sign out"
@@ -183,6 +206,35 @@ export const DashboardLayout: React.FC = () => {
           </div>
         </div>
       </aside>
+
+      <Modal
+        isOpen={logoutModalOpen}
+        onClose={closeLogoutModal}
+        title="Sign out of your account?"
+        description="You’ll be signed out of your dashboard and returned to the login screen."
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={closeLogoutModal}>
+              Stay Signed In
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={async () => {
+                closeLogoutModal();
+                await handleLogout();
+              }}
+            >
+              Sign Out
+            </Button>
+          </>
+        }
+      >
+        <div className="flex items-start gap-3 rounded-xl bg-rose-50 border border-rose-200 p-3 text-rose-700 text-xs">
+          <LogOut className="w-4 h-4 mt-0.5 shrink-0" />
+          <p>This ends your current session for this dashboard.</p>
+        </div>
+      </Modal>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -203,15 +255,19 @@ export const DashboardLayout: React.FC = () => {
                 {activeRole === 'ADMIN'
                   ? 'Platform Administration & Oversight'
                   : activeRole === 'DRIVER'
-                  ? 'Driver Workspace & Ride Dispatch'
-                  : 'Passenger Portal & Bookings'}
+                    ? 'Driver Workspace & Ride Dispatch'
+                    : 'Passenger Portal & Bookings'}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <Link to="/book">
-              <Button variant="accent" size="sm" leftIcon={<PlusCircle className="w-4 h-4" />}>
+              <Button
+                variant="accent"
+                size="sm"
+                leftIcon={<PlusCircle className="w-4 h-4" />}
+              >
                 Book a Ride
               </Button>
             </Link>
