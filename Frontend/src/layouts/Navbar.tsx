@@ -291,12 +291,7 @@ export const Navbar: React.FC = () => {
             </Button>
           </>
         }
-      >
-        <div className="flex items-start gap-3 rounded-xl bg-rose-50 border border-rose-200 p-3 text-rose-700 text-xs">
-          <LogOut className="w-4 h-4 mt-0.5 shrink-0" />
-          <p>This will end your current dashboard session.</p>
-        </div>
-      </Modal>
+      ></Modal>
     </header>
   );
 };

@@ -195,14 +195,6 @@ export const DashboardLayout: React.FC = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={openLogoutModal}
-              className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors"
-              title="Sign out"
-              aria-label="Sign out"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </aside>
@@ -229,12 +221,7 @@ export const DashboardLayout: React.FC = () => {
             </Button>
           </>
         }
-      >
-        <div className="flex items-start gap-3 rounded-xl bg-rose-50 border border-rose-200 p-3 text-rose-700 text-xs">
-          <LogOut className="w-4 h-4 mt-0.5 shrink-0" />
-          <p>This ends your current session for this dashboard.</p>
-        </div>
-      </Modal>
+      ></Modal>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -271,6 +258,14 @@ export const DashboardLayout: React.FC = () => {
                 Book a Ride
               </Button>
             </Link>
+            <button
+              onClick={openLogoutModal}
+              className="p-2.5 rounded-xl text-slate-600 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 bg-white transition-colors"
+              title="Sign out"
+              aria-label="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </header>
 

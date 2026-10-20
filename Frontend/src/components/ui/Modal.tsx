@@ -7,7 +7,7 @@ interface ModalProps {
   onClose: () => void;
   title?: string;
   description?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   footer?: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl';
 }
@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative z-10 w-full ${maxWidths[maxWidth]} bg-white/95 rounded-3xl shadow-[0_30px_80px_rgba(15,23,42,0.32)] border border-slate-200/80 overflow-hidden transform transition-all duration-200 scale-100 my-8 ring-1 ring-white/50`}
+        className={`relative z-10 w-full ${maxWidths[maxWidth]} bg-white/95 rounded-3xl shadow-[0_30px_80px_rgba(15,23,42,0.32)] border border-slate-200/80 transform transition-all duration-200 scale-100 my-8 ring-1 ring-white/50`}
       >
         {/* Header */}
         {(title || description) && (
@@ -81,7 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {/* Content */}
-        <div className="p-6">{children}</div>
+        {children && <div className="p-6">{children}</div>}
 
         {/* Footer */}
         {footer && (
