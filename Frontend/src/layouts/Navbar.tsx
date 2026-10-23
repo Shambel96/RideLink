@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Shield,
   Menu,
@@ -9,6 +9,8 @@ import {
   LogOut,
   ChevronDown,
   LayoutDashboard,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { Button } from '../components/ui/Button';
@@ -21,7 +23,11 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('ridelink-theme') === 'dark',
+  );
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -83,6 +89,22 @@ export const Navbar: React.FC = () => {
 
           {/* User Controls */}
           <div className="hidden md:flex items-center gap-4">
+            {location.pathname === '/' && (
+              <button
+                type="button"
+                onClick={() => setDarkMode((current) => {
+                  const next = !current;
+                  localStorage.setItem('ridelink-theme', next ? 'dark' : 'light');
+                  window.dispatchEvent(new CustomEvent('ridelink-theme-change', { detail: next }));
+                  return next;
+                })}
+                className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors"
+                aria-label={`Switch to ${darkMode ? 'day' : 'night'} mode`}
+                title={`Switch to ${darkMode ? 'day' : 'night'} mode`}
+              >
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+            )}
             {isAuthenticated && user ? (
               <div className="flex items-center gap-3">
                 {/* Multi-role Switcher */}
@@ -193,6 +215,22 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile menu trigger */}
           <div className="flex items-center gap-2 md:hidden">
+            {location.pathname === '/' && (
+              <button
+                type="button"
+                onClick={() => setDarkMode((current) => {
+                  const next = !current;
+                  localStorage.setItem('ridelink-theme', next ? 'dark' : 'light');
+                  window.dispatchEvent(new CustomEvent('ridelink-theme-change', { detail: next }));
+                  return next;
+                })}
+                className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                aria-label={`Switch to ${darkMode ? 'day' : 'night'} mode`}
+                title={`Switch to ${darkMode ? 'day' : 'night'} mode`}
+              >
+                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+            )}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -253,15 +291,10 @@ export const Navbar: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div className="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
+            <div className="pt-3 border-t border-slate-100">
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block">
+                <Button variant="accent" className="w-full font-bold">
                   Sign In
-                </Button>
-              </Link>
-              <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="accent" className="w-full">
-                  Sign Up
                 </Button>
               </Link>
             </div>

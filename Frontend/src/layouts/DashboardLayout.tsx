@@ -17,6 +17,8 @@ import {
   FileCheck,
   ChevronRight,
   FolderKanban,
+  Moon,
+  Sun,
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { Badge } from '../components/ui/Badge';
@@ -27,6 +29,9 @@ export const DashboardLayout: React.FC = () => {
   const { user, activeRole, setActiveRole, logout } = useAuthStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('ridelink-theme') === 'dark',
+  );
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -75,7 +80,7 @@ export const DashboardLayout: React.FC = () => {
         : passengerLinks;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className={`dashboard-shell min-h-screen flex flex-col lg:flex-row ${darkMode ? 'dashboard-theme-dark' : 'bg-slate-50'}`}>
       {/* Mobile Drawer Backdrop */}
       {sidebarOpen && (
         <div
@@ -226,7 +231,7 @@ export const DashboardLayout: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 sm:h-20 bg-white border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
+        <header className="dashboard-header h-16 sm:h-20 bg-white border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -249,6 +254,19 @@ export const DashboardLayout: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setDarkMode((current) => {
+                const next = !current;
+                localStorage.setItem('ridelink-theme', next ? 'dark' : 'light');
+                return next;
+              })}
+              className="p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors"
+              aria-label={`Switch to ${darkMode ? 'day' : 'night'} mode`}
+              title={`Switch to ${darkMode ? 'day' : 'night'} mode`}
+            >
+              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <Link to="/book">
               <Button
                 variant="accent"
@@ -270,7 +288,7 @@ export const DashboardLayout: React.FC = () => {
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
+        <main className="dashboard-main flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
       </div>
