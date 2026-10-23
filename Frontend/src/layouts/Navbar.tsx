@@ -291,15 +291,10 @@ export const Navbar: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div className="pt-3 border-t border-slate-100 grid grid-cols-2 gap-2">
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="outline" className="w-full">
+            <div className="pt-3 border-t border-slate-100">
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block">
+                <Button variant="accent" className="w-full font-bold">
                   Sign In
-                </Button>
-              </Link>
-              <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="accent" className="w-full">
-                  Sign Up
                 </Button>
               </Link>
             </div>
