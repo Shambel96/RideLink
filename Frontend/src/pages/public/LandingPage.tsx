@@ -8,12 +8,20 @@ import {
   ArrowRight,
   CheckCircle2,
   Navigation,
-  Sparkles,
   Zap,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { useAuthStore } from '../../stores/authStore';
+
+const HERO_VIDEOS = [
+  { id: 1, title: 'Passing Cars', src: '/hero-video-1.webm' },
+  { id: 2, title: 'Bridge Traffic', src: '/hero-video-2.webm' },
+  { id: 3, title: 'Night Driving', src: '/hero-video-3.webm' },
+  { id: 4, title: 'City Timelapse', src: '/hero-video-4.webm' },
+];
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -31,6 +39,77 @@ export const LandingPage: React.FC = () => {
     return () => window.removeEventListener('ridelink-theme-change', handleThemeChange);
   }, []);
 
+  const [showVideo, setShowVideo] = useState(false);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videoRefs = React.useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const playVideoStep = (videoIdx: number) => {
+      // Each video plays for 7 seconds
+      timer = setTimeout(() => {
+        if (!isMounted) return;
+
+        // If we just finished the last video in the sequence
+        if (videoIdx === HERO_VIDEOS.length - 1) {
+          // Show poster image again ONLY after ALL videos have finished
+          setShowVideo(false);
+          timer = setTimeout(() => {
+            if (!isMounted) return;
+            // After poster finishes (5s), restart cycle from video 0
+            setCurrentVideoIndex(0);
+            setShowVideo(true);
+            playVideoStep(0);
+          }, 5000);
+        } else {
+          // Transition directly to the next video in sequence without showing poster
+          const nextIdx = videoIdx + 1;
+          setCurrentVideoIndex(nextIdx);
+          setShowVideo(true);
+          playVideoStep(nextIdx);
+        }
+      }, 7000);
+    };
+
+    // On initial page load/refresh: show poster for 4.5 seconds, then begin video sequence
+    timer = setTimeout(() => {
+      if (!isMounted) return;
+      setCurrentVideoIndex(0);
+      setShowVideo(true);
+      playVideoStep(0);
+    }, 4500);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, []);
+
+  // Manage playback: active video plays, inactive videos pause
+  useEffect(() => {
+    videoRefs.current.forEach((vid, idx) => {
+      if (!vid) return;
+      if (showVideo && idx === currentVideoIndex) {
+        vid.currentTime = 0;
+        vid.play().catch(() => {});
+      } else {
+        vid.pause();
+      }
+    });
+  }, [showVideo, currentVideoIndex]);
+
+  const handleNextVideo = () => {
+    setCurrentVideoIndex((prev) => (prev + 1) % HERO_VIDEOS.length);
+    setShowVideo(true);
+  };
+
+  const handlePrevVideo = () => {
+    setCurrentVideoIndex((prev) => (prev - 1 + HERO_VIDEOS.length) % HERO_VIDEOS.length);
+    setShowVideo(true);
+  };
+
   const shouldShowDriverSignIn =
     isAuthenticated && user ? !user.roles.includes('DRIVER') : false;
 
@@ -43,36 +122,77 @@ export const LandingPage: React.FC = () => {
 
   return (
     <div className={`landing-page relative overflow-hidden ${darkMode ? 'landing-theme-dark' : 'bg-slate-50'}`}>
-      {/* Hero Section */}
-      <section className="relative bg-slate-950 text-white pt-20 pb-28 lg:pt-28 lg:pb-36 overflow-hidden">
-        {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b12_1px,transparent_1px),linear-gradient(to_bottom,#1e293b12_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" />
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-electric-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Section — full screen height below navbar */}
+      <section className="hero-section relative text-white min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)] min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100dvh-5rem)] flex items-center overflow-hidden py-8 sm:py-12">
+        {/* ── Cinematic background video playlist & poster ──────────── */}
+        {/* Static poster fallback — z-index:0, sits BEHIND the videos */}
+        <div className="hero-bg-poster" aria-hidden="true" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Content */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-electric-400">
-                <Sparkles className="w-3.5 h-3.5 text-electric-500" />
-                <span>Next-Gen Urban Mobility Platform</span>
-              </div>
+        {/* Video elements in sequence order */}
+        {HERO_VIDEOS.map((vid, idx) => (
+          <video
+            key={vid.id}
+            ref={(el) => {
+              videoRefs.current[idx] = el;
+            }}
+            className={`hero-bg-video ${showVideo && idx === currentVideoIndex ? 'is-visible' : 'is-hidden'}`}
+            autoPlay={idx === 0}
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+          >
+            <source src={vid.src} type="video/webm" />
+          </video>
+        ))}
+
+        {/* Layered gradient overlays — z-index:2, above video */}
+        <div
+          className="hero-overlay"
+          style={{
+            background:
+              'linear-gradient(135deg,rgba(2,6,23,0.80) 0%,rgba(2,6,23,0.52) 55%,rgba(2,6,23,0.30) 100%)',
+          }}
+          aria-hidden="true"
+        />
+        {/* Bottom fade so the section blends into the content below */}
+        <div
+          className="hero-overlay hero-overlay-bottom"
+          aria-hidden="true"
+        />
+        {/* Electric-lime glow top-right accent */}
+        <div
+          className="absolute -top-40 -right-40 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'rgba(204,255,0,0.06)', filter: 'blur(80px)', zIndex: 2 }}
+          aria-hidden="true"
+        />
+        {/* Subtle grid texture */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-20"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right,#1e293b22 1px,transparent 1px),linear-gradient(to bottom,#1e293b22 1px,transparent 1px)',
+            backgroundSize: '32px 32px',
+            zIndex: 2,
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="max-w-2xl">
+            {/* Hero Content — full-width, left-aligned on desktop */}
+            <div className="hero-content-animate space-y-4">
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]">
-                Move freely. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400">
-                  Ride with confidence in{' '}
+                <span className="block">Move freely.</span>
+                <span className="block text-electric-500">
+                  Ride in real time.
                 </span>
-                <span className="text-electric-500 underline decoration-electric-500/50 underline-offset-8">
-                  real time
-                </span>
-                .
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-                RideLink connects verified drivers and passengers in seconds.
-                Enjoy crystal-clear ETB fares, live GPS route estimation, and
-                effortless booking.
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Verified drivers · Live GPS · Transparent ETB fares
               </p>
 
               {/* Quick Booking Hero Input */}
@@ -146,97 +266,68 @@ export const LandingPage: React.FC = () => {
                 </form>
               </Card>
 
-              {/* Trust badges */}
-              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-electric-500" />
-                  <span>Licensed & Background-Checked</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-electric-500" />
-                  <span>&lt; 3 Min Average Pickup</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-electric-500" />
-                  <span>Transparent 15 ETB Base Rate</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Preview Card */}
-            <div className="lg:col-span-5">
-              <div className="relative mx-auto max-w-sm sm:max-w-md bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-3xl border border-slate-800 shadow-2xl">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                      Live Dispatch
-                    </span>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-electric-500/20 text-electric-400">
-                    Active Drivers Near You
-                  </span>
-                </div>
-
-                {/* Simulated interactive ride visualizer */}
-                <div className="py-6 space-y-4">
-                  <div className="bg-slate-950/80 rounded-2xl p-4 border border-slate-800/80 space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-[11px] text-slate-400">Pickup</p>
-                        <p className="text-xs font-semibold text-white">
-                          Bole Medhanialem Church
-                        </p>
-                      </div>
-                    </div>
-                    <div className="border-l-2 border-dashed border-slate-700 ml-3 h-5" />
-                    <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-electric-500/20 text-electric-500 flex items-center justify-center shrink-0 mt-0.5">
-                        <MapPin className="w-3.5 h-3.5 text-electric-500" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-[11px] text-slate-400">
-                          Destination
-                        </p>
-                        <p className="text-xs font-semibold text-white">
-                          Meskel Square, Stadium
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 flex items-center justify-between">
-                    <div>
-                      <p className="text-[11px] text-slate-400">
-                        Estimated Fare (Haversine)
-                      </p>
-                      <p className="text-xl font-extrabold text-white">
-                        47.50{' '}
-                        <span className="text-xs text-electric-500">ETB</span>
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[11px] text-slate-400">
-                        Estimated Time
-                      </p>
-                      <p className="text-sm font-bold text-slate-200">
-                        ~ 9 mins
-                      </p>
-                    </div>
-                  </div>
-
-                  <Link to="/book" className="block w-full">
-                    <Button variant="accent" className="w-full font-bold">
-                      Launch Interactive Map
-                    </Button>
-                  </Link>
-                </div>
+              {/* Trust badges — compact single row */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-slate-400">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-electric-500" />
+                  Background-Checked
+                </span>
+                <span className="text-slate-700">·</span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-electric-500" />
+                  &lt; 3 Min Pickup
+                </span>
+                <span className="text-slate-700">·</span>
+                <span className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-electric-500" />
+                  15 ETB Base Rate
+                </span>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Media video playlist controls — clean arrows with minimal dots (no text) */}
+        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 z-20 pointer-events-auto flex items-center gap-1.5 sm:gap-2 bg-slate-950/70 p-1.5 rounded-full border border-slate-800/80 backdrop-blur-md shadow-lg">
+          {/* Previous video button */}
+          <button
+            type="button"
+            onClick={handlePrevVideo}
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            title="Previous video"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          {/* Minimal progress dots — no text */}
+          <div className="flex items-center gap-1.5 px-2">
+            {HERO_VIDEOS.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setCurrentVideoIndex(idx);
+                  setShowVideo(true);
+                }}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  showVideo && currentVideoIndex === idx
+                    ? 'w-4 bg-emerald-400 shadow-[0_0_6px_#34d399]'
+                    : 'w-1.5 bg-slate-700 hover:bg-slate-500'
+                }`}
+                title={`Switch to video ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Next video button */}
+          <button
+            type="button"
+            onClick={handleNextVideo}
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            title="Next video"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </section>
 
@@ -314,6 +405,109 @@ export const LandingPage: React.FC = () => {
               .
             </p>
           </Card>
+        </div>
+      </section>
+
+      {/* ── Live Dispatch Demo Section ─────────────────────────── */}
+      <section className="bg-slate-950 py-20 lg:py-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left: explanation */}
+            <div className="space-y-5 text-center lg:text-left">
+              <span className="text-xs font-bold uppercase tracking-widest text-electric-500">
+                Real-Time Intelligence
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Watch your ride come to life — before you even tap Book.
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                RideLink calculates your fare instantly using the Haversine
+                distance formula, matches you with the nearest verified driver,
+                and streams live GPS coordinates until your trip is complete.
+              </p>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-electric-500 shrink-0" />
+                  Instant ETB fare estimate before booking
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-electric-500 shrink-0" />
+                  Live driver location via WebSocket
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-electric-500 shrink-0" />
+                  Ride status: ACCEPTED → ARRIVED → IN_PROGRESS → COMPLETED
+                </li>
+              </ul>
+              <div className="pt-2">
+                <Link to="/book">
+                  <Button variant="accent" size="lg" className="font-bold">
+                    Try the Live Map
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right: Live Dispatch preview card */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="w-full max-w-sm bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-3xl border border-slate-800 shadow-2xl">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                      Live Dispatch
+                    </span>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-electric-500/20 text-electric-400">
+                    Active Drivers Near You
+                  </span>
+                </div>
+
+                <div className="py-6 space-y-4">
+                  <div className="bg-slate-950/80 rounded-2xl p-4 border border-slate-800/80 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-400">Pickup</p>
+                        <p className="text-xs font-semibold text-white">Bole Medhanialem Church</p>
+                      </div>
+                    </div>
+                    <div className="border-l-2 border-dashed border-slate-700 ml-3 h-5" />
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-electric-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <MapPin className="w-3.5 h-3.5 text-electric-500" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-400">Destination</p>
+                        <p className="text-xs font-semibold text-white">Meskel Square, Stadium</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 flex items-center justify-between">
+                    <div>
+                      <p className="text-[11px] text-slate-400">Estimated Fare (Haversine)</p>
+                      <p className="text-xl font-extrabold text-white">
+                        47.50 <span className="text-xs text-electric-500">ETB</span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[11px] text-slate-400">Estimated Time</p>
+                      <p className="text-sm font-bold text-slate-200">~ 9 mins</p>
+                    </div>
+                  </div>
+
+                  <Link to="/book" className="block w-full">
+                    <Button variant="accent" className="w-full font-bold">
+                      Launch Interactive Map
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
