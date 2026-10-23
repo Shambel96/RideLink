@@ -121,3 +121,118 @@
   border-radius: inherit;
   z-index: 10;
 }
+
+/* ─── Hero section: cinematic video background ──────────────────────────── */
+
+/* The section itself is the positioning context. Min-height so content is
+   never squashed on very short viewports. */
+.hero-section {
+  background-color: #020617; /* slate-950 hard floor – visible before video */
+  min-height: calc(100vh - 4rem);
+  min-height: calc(100dvh - 4rem);
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .hero-section {
+    min-height: calc(100vh - 5rem);
+    min-height: calc(100dvh - 5rem);
+  }
+}
+
+/* The <video> fills the section exactly, behind all content.
+   z-index:1 so it sits ABOVE the .hero-bg-poster fallback (z-0) */
+.hero-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 60%; /* keep road & cars in the lower half */
+  pointer-events: none;
+  z-index: 1; /* above poster (0), below overlays (2) */
+  transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+}
+
+.hero-bg-video.is-visible {
+  opacity: 0.95;
+}
+
+.hero-bg-video.is-hidden {
+  opacity: 0;
+}
+
+/* Static poster fallback – sits BEHIND the video (z-0).
+   Shown when video hasn't loaded, fails, or motion is reduced. */
+.hero-bg-poster {
+  position: absolute;
+  inset: 0;
+  background: url('/hero-poster.jpg') center 60% / cover no-repeat;
+  z-index: 0;
+}
+
+/* Gradient overlays: sit above the video (z-2), below hero content (z-10) */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.hero-overlay-bottom {
+  inset: auto 0 0 0;
+  height: 9rem;
+  background: linear-gradient(to bottom, transparent, rgba(2,6,23,0.96));
+}
+
+/* ─── Hero content entrance animations ─────────────────────────────────── */
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Left column slides up on page load */
+.hero-content-animate {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger the badge, headline, sub-text, card, and trust badges */
+.hero-content-animate > *:nth-child(1) { animation-delay: 0.10s; }
+.hero-content-animate > *:nth-child(2) { animation-delay: 0.20s; }
+.hero-content-animate > *:nth-child(3) { animation-delay: 0.30s; }
+.hero-content-animate > *:nth-child(4) { animation-delay: 0.42s; }
+.hero-content-animate > *:nth-child(5) { animation-delay: 0.54s; }
+
+/* ─── Reduced-motion: disable video & animations ────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Hide the video (z-1) — the static poster (z-0) shows through */
+  .hero-bg-video {
+    display: none;
+  }
+
+  /* Remove the entrance animation so content appears immediately */
+  .hero-content-animate,
+  .hero-content-animate > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ─── Mobile: prevent the video from causing layout shift ───────────────── */
+
+@media (max-width: 640px) {
+  .hero-bg-video {
+    object-position: 70% 60%; /* shift frame so car is still visible on narrow screens */
+  }
+}
+
