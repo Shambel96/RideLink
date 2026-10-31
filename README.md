@@ -15,11 +15,11 @@ The repository contains a NestJS and Prisma backend, a React and Vite frontend, 
 
 ## Technology
 
-| Area | Technologies |
-| --- | --- |
-| Backend | NestJS, TypeScript, Prisma, PostgreSQL, Passport, JWT, Swagger/OpenAPI |
-| Frontend | React, TypeScript, Vite, Tailwind CSS, React Router, Zustand, TanStack Query, Leaflet |
-| Local infrastructure | Docker Compose, PostgreSQL, pgAdmin |
+| Area                 | Technologies                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| Backend              | NestJS, TypeScript, Prisma, PostgreSQL, Passport, JWT, Swagger/OpenAPI                |
+| Frontend             | React, TypeScript, Vite, Tailwind CSS, React Router, Zustand, TanStack Query, Leaflet |
+| Local infrastructure | Docker Compose, PostgreSQL, pgAdmin                                                   |
 
 ## Repository layout
 
@@ -109,14 +109,14 @@ The application is available at `http://localhost:5173`. The API base URL is `ht
 
 Backend settings are documented in `.env.example`:
 
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `PORT` | API server port (defaults to `3000`) |
-| `CORS_ORIGIN` | Allowed frontend origin |
-| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` | JWT signing secrets |
-| `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` | Token lifetimes |
-| `FARE_CURRENCY`, `FARE_BASE_RATE`, `FARE_PER_KM` | Currency and fare calculation settings |
+| Variable                                          | Purpose                                |
+| ------------------------------------------------- | -------------------------------------- |
+| `DATABASE_URL`                                    | PostgreSQL connection string           |
+| `PORT`                                            | API server port (defaults to `3000`)   |
+| `CORS_ORIGIN`                                     | Allowed frontend origin                |
+| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`         | JWT signing secrets                    |
+| `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` | Token lifetimes                        |
+| `FARE_CURRENCY`, `FARE_BASE_RATE`, `FARE_PER_KM`  | Currency and fare calculation settings |
 
 The frontend accepts `VITE_API_BASE_URL` and the optional `VITE_WS_URL` at build or development time.
 
@@ -124,25 +124,25 @@ The frontend accepts `VITE_API_BASE_URL` and the optional `VITE_WS_URL` at build
 
 ### Backend (repository root)
 
-| Command | Description |
-| --- | --- |
-| `npm run start` | Start the API |
-| `npm run start:dev` | Start the API in watch mode |
+| Command              | Description                        |
+| -------------------- | ---------------------------------- |
+| `npm run start`      | Start the API                      |
+| `npm run start:dev`  | Start the API in watch mode        |
 | `npm run start:prod` | Start the compiled API from `dist` |
-| `npm run build` | Build the backend |
-| `npm run lint` | Run ESLint (also applies fixes) |
-| `npm run test` | Run unit tests |
-| `npm run test:e2e` | Run end-to-end tests |
-| `npm run seed` | Insert development seed data |
+| `npm run build`      | Build the backend                  |
+| `npm run lint`       | Run ESLint (also applies fixes)    |
+| `npm run test`       | Run unit tests                     |
+| `npm run test:e2e`   | Run end-to-end tests               |
+| `npm run seed`       | Insert development seed data       |
 
 ### Frontend (`Frontend/`)
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the Vite development server |
-| `npm run build` | Type-check and build the frontend |
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the Vite development server    |
+| `npm run build`   | Type-check and build the frontend    |
 | `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run Oxlint |
+| `npm run lint`    | Run Oxlint                           |
 
 ## Production deployment
 
@@ -154,4 +154,4 @@ Contributions should include a focused change, an informative commit message, an
 
 ## License
 
-The repository is marked `UNLICENSED` and does not currently include a public license. Contact the project owner for usage and distribution terms.
+The repository is marked
