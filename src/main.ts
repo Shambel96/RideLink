@@ -59,10 +59,11 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: { persistAuthorization: true },
   });
-
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
+  const port = `${process.env.PORT || 3000}`;
+  await app.listen(port, '0.0.0.0');
   console.log(`\n🚀 RideLink API running on: http://localhost:${port}/api/v1`);
-  console.log(`📚 Swagger docs:            http://localhost:${port}/api/docs\n`);
+  console.log(
+    `📚 Swagger docs:            http://localhost:${port}/api/docs\n`,
+  );
 }
 bootstrap();
