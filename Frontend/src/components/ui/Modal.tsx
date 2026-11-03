@@ -46,46 +46,48 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 sm:p-8 overflow-y-auto">
-      {/* Full-screen backdrop with blur to cover the entire app behind the sign-out dialog */}
       <div
-        className="absolute inset-0 bg-slate-950/30 backdrop-blur-xl transition-opacity duration-200"
+        className="absolute inset-0 bg-slate-950/55 backdrop-blur-xl transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Modal Dialog */}
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative z-10 w-full ${maxWidths[maxWidth]} bg-white/95 rounded-3xl shadow-[0_30px_80px_rgba(15,23,42,0.32)] border border-slate-200/80 transform transition-all duration-200 scale-100 my-8 ring-1 ring-white/50`}
+        className={`relative z-10 w-full ${maxWidths[maxWidth]} bg-slate-950 rounded-[28px] shadow-[0_30px_90px_rgba(15,23,42,0.5)] border border-slate-800/90 transform transition-all duration-200 scale-100 my-8 ring-1 ring-electric-500/20`}
       >
-        {/* Header */}
         {(title || description) && (
-          <div className="px-6 pt-6 pb-4 border-b border-slate-100 flex items-start justify-between">
-            <div className="space-y-1 pr-6">
-              {title && (
-                <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-              )}
-              {description && (
-                <p className="text-xs text-slate-500">{description}</p>
-              )}
+          <div className="px-6 pt-6 pb-5 border-b border-slate-800/80 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 rounded-t-[28px]">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-3 pr-4">
+                <div className="inline-flex items-center gap-2 rounded-full border border-electric-500/40 bg-electric-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-electric-400">
+                  Secure session
+                </div>
+                {title && (
+                  <h3 className="text-xl font-black tracking-tight text-white">
+                    {title}
+                  </h3>
+                )}
+                {description && (
+                  <p className="text-sm leading-6 text-slate-300">{description}</p>
+                )}
+              </div>
+              <button
+                onClick={onClose}
+                className="shrink-0 rounded-xl border border-slate-700 bg-slate-900/80 p-2 text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
+                aria-label="Close dialog"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="text-slate-400 hover:text-slate-700 rounded-lg p-1 transition-colors"
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
         )}
 
-        {/* Content */}
-        {children && <div className="p-6">{children}</div>}
+        {children && <div className="p-6 text-slate-200">{children}</div>}
 
-        {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
+          <div className="px-6 py-4 bg-slate-900/80 border-t border-slate-800/80 rounded-b-[28px] flex items-center justify-end gap-3">
             {footer}
           </div>
         )}

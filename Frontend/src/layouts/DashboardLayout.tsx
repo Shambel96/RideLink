@@ -215,8 +215,9 @@ export const DashboardLayout: React.FC = () => {
               Stay Signed In
             </Button>
             <Button
-              variant="danger"
+              variant="accent"
               size="sm"
+              className="shadow-limeGlow"
               onClick={async () => {
                 closeLogoutModal();
                 await handleLogout();
