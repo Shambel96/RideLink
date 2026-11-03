@@ -1,310 +1,153 @@
 # RideLink
 
-RideLink is a full-stack ride-hailing platform designed for passengers, drivers, and administrators. It supports ride requests, real-time driver assignment, vehicle management, JWT-based authentication, and role-based access across a modern monorepo application.
+RideLink is a full-stack ride-hailing application for passengers, drivers, and administrators. It brings together ride requests and trip status, driver onboarding and vehicle management, and operational tools in a web application backed by a REST API.
 
-The project combines a NestJS backend, a React + Vite frontend, Prisma ORM, PostgreSQL, and Docker-based local infrastructure to deliver a scalable and maintainable ride-sharing platform.
+The repository contains a NestJS and Prisma backend, a React and Vite frontend, and a Docker Compose configuration for local PostgreSQL development.
 
-## Overview
+## Capabilities
 
-RideLink provides three core user journeys:
+- Passenger, driver, and administrator accounts with JWT authentication and role-based authorization
+- Driver onboarding and verification, including vehicle management
+- Ride requests and trip lifecycle management with pickup and destination coordinates
+- Administrative views for driver, user, and ride operations
+- Map support and Socket.IO client integration in the frontend
+- OpenAPI documentation for the backend API
 
-- Passengers can sign up, log in, request rides, and track trip progress.
-- Drivers can register profiles, manage vehicles, accept requests, and update ride status.
-- Administrators can review driver onboarding, oversee operations, and monitor system activity.
+## Technology
 
-## Features
+| Area                 | Technologies                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| Backend              | NestJS, TypeScript, Prisma, PostgreSQL, Passport, JWT, Swagger/OpenAPI                |
+| Frontend             | React, TypeScript, Vite, Tailwind CSS, React Router, Zustand, TanStack Query, Leaflet |
+| Local infrastructure | Docker Compose, PostgreSQL, pgAdmin                                                   |
 
-- Secure authentication and authorization with JWT access and refresh tokens
-- Role-based access control for passenger, driver, and admin roles
-- Driver registration and verification workflow
-- Vehicle management for registered drivers
-- Ride lifecycle management from request to completion
-- Geolocation-aware trip flow with pickup and destination coordinates
-- Admin dashboard for overview, user management, and ride monitoring
-- Responsive frontend built with React, Vite, and Tailwind CSS
-- OpenAPI/Swagger API documentation
-- Local development setup using Docker and PostgreSQL
-
-## Tech Stack
-
-### Backend
-
-- NestJS
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- Passport + JWT authentication
-- Swagger/OpenAPI
-
-### Frontend
-
-- React
-- Vite
-- TypeScript
-- Tailwind CSS
-- React Router
-- Zustand
-- Leaflet map support
-- Socket-based real-time interaction support
-
-### Infrastructure
-
-- Docker Compose
-- PostgreSQL container
-- PgAdmin container
-
-## Project Structure
+## Repository layout
 
 ```text
-RideLink/
-├── Frontend/                  # React frontend for the app
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── ...
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   ├── seed.ts               # Seed data for demo accounts
-│   └── migrations/
-├── src/                      # NestJS backend
-│   ├── admin/
-│   ├── auth/
-│   ├── common/
-│   ├── config/
-│   ├── driver/
-│   ├── prisma/
-│   ├── ride/
-│   ├── user/
-│   ├── vehicle/
-│   ├── app.module.ts
-│   ├── main.ts
-│   └── ...
-├── test/
-├── .env.example              # Environment template
-├── docker-compose.yml
-├── package.json
-├── tsconfig.json
-├── nest-cli.json
-├── .gitignore
-├── README.md
-└── ...
+.
+├── Frontend/          # React web application
+├── prisma/            # Prisma schema, migrations, and seed script
+├── src/               # NestJS API modules
+├── test/              # End-to-end tests
+├── .env.example       # Backend environment variable template
+└── docker-compose.yml # Local PostgreSQL and pgAdmin services
 ```
 
-## Prerequisites
+## Requirements
 
-Before running the application, make sure you have:
+- Node.js 18 or later and npm
+- Docker with the Docker Compose plugin
 
-- Node.js 18 or later
-- npm
-- Docker and Docker Compose
-- PostgreSQL client tools if you want to inspect the database manually
+## Local development
 
-## Environment Setup
-
-Create a `.env` file in the project root using the values from `.env.example`:
-
-```env
-DATABASE_URL="postgresql://postgres:1234@localhost:5432/ride_link?schema=public"
-PORT=3000
-CORS_ORIGIN="http://localhost:5173"
-JWT_ACCESS_SECRET="your-access-secret"
-JWT_REFRESH_SECRET="your-refresh-secret"
-JWT_ACCESS_EXPIRES_IN="15m"
-JWT_REFRESH_EXPIRES_IN="7d"
-FARE_CURRENCY="ETB"
-FARE_BASE_RATE="15"
-FARE_PER_KM="8"
-```
-
-> This project provides safe defaults for local development, but production deployments should use secure secrets and environment-specific configuration.
-
-## Local Development Setup
-
-### 1. Clone the repository
+### 1. Get the code and install dependencies
 
 ```bash
 git clone https://github.com/shambel96/RideLink.git
 cd RideLink
-```
-
-### 2. Install dependencies
-
-```bash
 npm install
-cd Frontend && npm install && cd ..
+cd Frontend
+npm install
+cd ..
 ```
 
-### 3. Start the database with Docker
+### 2. Configure the backend
 
-```bash
-docker compose up -d
-```
-
-This starts:
-
-- PostgreSQL on port 5432
-- PgAdmin on port 5050
-
-### 4. Configure environment variables
+Create a local environment file from the provided template:
 
 ```bash
 cp .env.example .env
 ```
 
-### 5. Generate Prisma client and apply migrations
+Review the values in `.env`. The template is intended for local development. Use unique, securely generated secrets and environment-specific values outside a local environment. Do not commit `.env` or production credentials.
+
+The frontend defaults to `http://localhost:3000/api/v1`. To use a different API URL, set `VITE_API_BASE_URL` in `Frontend/.env` before starting or building the frontend. The optional `VITE_WS_URL` setting controls the Socket.IO server URL.
+
+### 3. Start PostgreSQL
+
+```bash
+docker compose up -d postgres
+```
+
+The Compose configuration exposes PostgreSQL on port `5432`. The backend database URL in `.env` must match the local database credentials and database name configured in `docker-compose.yml`.
+
+To start the optional pgAdmin service as well, run `docker compose up -d` instead. It is available at `http://localhost:5050` with the local credentials defined in the Compose file. These credentials are for local development only.
+
+### 4. Apply migrations and optionally seed local data
 
 ```bash
 npx prisma generate
-npx prisma migrate dev --name init
-```
-
-If the database already exists, you can sync schema changes with:
-
-```bash
 npx prisma migrate deploy
 ```
 
-### 6. Seed demo data
+To populate the local database with sample records, run:
 
 ```bash
 npm run seed
 ```
 
-This creates sample users for testing, including admin, passenger, approved driver, and pending driver accounts.
+The seed script creates development accounts and sample ride data. Keep seeded data and credentials confined to local development; review `prisma/seed.ts` for the current fixtures.
 
-## Running the Application
+### 5. Start the services
 
-### Backend
+In one terminal, start the API:
 
 ```bash
 npm run start:dev
 ```
 
-The backend is available at:
-
-- API base: http://localhost:3000/api/v1
-- Swagger UI: http://localhost:3000/api/docs
-
-### Frontend
+In another terminal, start the frontend:
 
 ```bash
 cd Frontend
 npm run dev
 ```
 
-The frontend runs at:
+The application is available at `http://localhost:5173`. The API base URL is `http://localhost:3000/api/v1`, and interactive API documentation is at `http://localhost:3000/api/docs`.
 
-- http://localhost:5173
+## Configuration
 
-## Default Demo Accounts
+Backend settings are documented in `.env.example`:
 
-The seeded demo accounts are:
+| Variable                                          | Purpose                                |
+| ------------------------------------------------- | -------------------------------------- |
+| `DATABASE_URL`                                    | PostgreSQL connection string           |
+| `PORT`                                            | API server port (defaults to `3000`)   |
+| `CORS_ORIGIN`                                     | Allowed frontend origin                |
+| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`         | JWT signing secrets                    |
+| `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` | Token lifetimes                        |
+| `FARE_CURRENCY`, `FARE_BASE_RATE`, `FARE_PER_KM`  | Currency and fare calculation settings |
 
-```text
-Admin:           admin@ridelink.com       / Admin@1234
-Passenger 1:     abebe@example.com        / Passenger@123
-Passenger 2:     tigist@example.com       / Passenger@123
-Driver (approved): kebede.driver@example.com / Driver@1234
-Driver (pending):  selam.driver@example.com / Driver@1234
-```
+The frontend accepts `VITE_API_BASE_URL` and the optional `VITE_WS_URL` at build or development time.
 
-## API Documentation
+## Available commands
 
-Swagger/OpenAPI documentation is available at:
+### Backend (repository root)
 
-```text
-http://localhost:3000/api/docs
-```
+| Command              | Description                        |
+| -------------------- | ---------------------------------- |
+| `npm run start`      | Start the API                      |
+| `npm run start:dev`  | Start the API in watch mode        |
+| `npm run start:prod` | Start the compiled API from `dist` |
+| `npm run build`      | Build the backend                  |
+| `npm run lint`       | Run ESLint (also applies fixes)    |
+| `npm run test`       | Run unit tests                     |
+| `npm run test:e2e`   | Run end-to-end tests               |
+| `npm run seed`       | Insert development seed data       |
 
-The API includes endpoints for:
+### Frontend (`Frontend/`)
 
-- Authentication
-- Users
-- Drivers
-- Vehicles
-- Rides
-- Admin operations
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the Vite development server    |
+| `npm run build`   | Type-check and build the frontend    |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Run Oxlint                           |
 
-## Available Scripts
+## Production deployment
 
-### Root project
+This repository provides local development infrastructure and application code; deployment infrastructure and operational policies must be configured for the target environment. Before deploying, configure strong secrets through a secret manager, set the production database and frontend URLs, restrict CORS to trusted origins, terminate traffic over HTTPS, and establish database backups, logging, monitoring, and access controls. Apply committed database migrations as part of the release process and do not use development seed data in production.
 
-```bash
-npm run start           # Start the NestJS app
-npm run start:dev       # Start in watch mode
-npm run start:debug     # Start in debug mode
-npm run build           # Build the backend
-npm run test            # Run Jest tests
-npm run test:e2e       # Run end-to-end tests
-npm run lint           # Lint the project
-npm run seed           # Seed database demo data
-```
+## Contributing
 
-### Frontend
-
-```bash
-cd Frontend
-npm run dev            # Start the Vite frontend
-npm run build          # Build the frontend for production
-npm run preview        # Preview the production build
-npm run lint           # Lint frontend files
-```
-
-## Contribution Guidelines
-
-Contributions are welcome. Please follow a clean and consistent workflow:
-
-### 1. Create a feature branch
-
-```bash
-git checkout -b feature/driver-verification-flow
-```
-
-### 2. Make focused changes
-
-Keep commits small and meaningful. Update documentation whenever behavior changes.
-
-### 3. Use conventional commit messages
-
-Use the standard format below:
-
-```bash
-git add .
-git commit -m "feat: add driver verification dashboard"
-```
-
-Typical commit types include:
-
-- `feat`: new feature
-- `fix`: bug fix
-- `docs`: documentation update
-- `refactor`: code cleanup without behavior change
-- `chore`: maintenance tasks
-
-### 4. Push and open a pull request
-
-```bash
-git push origin feature/driver-verification-flow
-```
-
-Include a clear summary of the change, why it was needed, and any migration or setup notes in the PR description.
-
-## Production Notes
-
-For deployment, consider:
-
-- using environment-specific secrets instead of local defaults
-- securing JWT signing keys and refresh token configuration
-- using a managed PostgreSQL service in production
-- enabling HTTPS and restricting CORS appropriately
-- configuring backups, monitoring, and logging
-- validating rate limiting and request throttling for public routes
-
-## License
-
-This project is currently configured for internal or project-specific use and does not include a public license declaration.
-
-## License
-
-This project is currently configured as a private application and does not include a public license file.
+Contributions should include a focused change, an informative commit message, and updates to documentation when behavior or setup changes. For larger changes, open an issue or discussion first so the proposed approach can be reviewed.

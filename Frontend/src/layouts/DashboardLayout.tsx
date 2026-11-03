@@ -80,7 +80,9 @@ export const DashboardLayout: React.FC = () => {
         : passengerLinks;
 
   return (
-    <div className={`dashboard-shell min-h-screen flex flex-col lg:flex-row ${darkMode ? 'dashboard-theme-dark' : 'bg-slate-50'}`}>
+    <div
+      className={`dashboard-shell min-h-screen flex flex-col lg:flex-row ${darkMode ? 'dashboard-theme-dark' : 'bg-slate-50'}`}
+    >
       {/* Mobile Drawer Backdrop */}
       {sidebarOpen && (
         <div
@@ -215,8 +217,9 @@ export const DashboardLayout: React.FC = () => {
               Stay Signed In
             </Button>
             <Button
-              variant="danger"
+              variant="accent"
               size="sm"
+              className="shadow-limeGlow"
               onClick={async () => {
                 closeLogoutModal();
                 await handleLogout();
@@ -256,16 +259,25 @@ export const DashboardLayout: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setDarkMode((current) => {
-                const next = !current;
-                localStorage.setItem('ridelink-theme', next ? 'dark' : 'light');
-                return next;
-              })}
+              onClick={() =>
+                setDarkMode((current) => {
+                  const next = !current;
+                  localStorage.setItem(
+                    'ridelink-theme',
+                    next ? 'dark' : 'light',
+                  );
+                  return next;
+                })
+              }
               className="p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200 transition-colors"
               aria-label={`Switch to ${darkMode ? 'day' : 'night'} mode`}
               title={`Switch to ${darkMode ? 'day' : 'night'} mode`}
             >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {darkMode ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
             </button>
             <Link to="/book">
               <Button

@@ -92,17 +92,30 @@ export const Navbar: React.FC = () => {
             {location.pathname === '/' && (
               <button
                 type="button"
-                onClick={() => setDarkMode((current) => {
-                  const next = !current;
-                  localStorage.setItem('ridelink-theme', next ? 'dark' : 'light');
-                  window.dispatchEvent(new CustomEvent('ridelink-theme-change', { detail: next }));
-                  return next;
-                })}
+                onClick={() =>
+                  setDarkMode((current) => {
+                    const next = !current;
+                    localStorage.setItem(
+                      'ridelink-theme',
+                      next ? 'dark' : 'light',
+                    );
+                    window.dispatchEvent(
+                      new CustomEvent('ridelink-theme-change', {
+                        detail: next,
+                      }),
+                    );
+                    return next;
+                  })
+                }
                 className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors"
                 aria-label={`Switch to ${darkMode ? 'day' : 'night'} mode`}
                 title={`Switch to ${darkMode ? 'day' : 'night'} mode`}
               >
-                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {darkMode ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
               </button>
             )}
             {isAuthenticated && user ? (
@@ -218,17 +231,30 @@ export const Navbar: React.FC = () => {
             {location.pathname === '/' && (
               <button
                 type="button"
-                onClick={() => setDarkMode((current) => {
-                  const next = !current;
-                  localStorage.setItem('ridelink-theme', next ? 'dark' : 'light');
-                  window.dispatchEvent(new CustomEvent('ridelink-theme-change', { detail: next }));
-                  return next;
-                })}
+                onClick={() =>
+                  setDarkMode((current) => {
+                    const next = !current;
+                    localStorage.setItem(
+                      'ridelink-theme',
+                      next ? 'dark' : 'light',
+                    );
+                    window.dispatchEvent(
+                      new CustomEvent('ridelink-theme-change', {
+                        detail: next,
+                      }),
+                    );
+                    return next;
+                  })
+                }
                 className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                 aria-label={`Switch to ${darkMode ? 'day' : 'night'} mode`}
                 title={`Switch to ${darkMode ? 'day' : 'night'} mode`}
               >
-                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {darkMode ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
               </button>
             )}
             <button
@@ -292,7 +318,11 @@ export const Navbar: React.FC = () => {
             </div>
           ) : (
             <div className="pt-3 border-t border-slate-100">
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block">
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block"
+              >
                 <Button variant="accent" className="w-full font-bold">
                   Sign In
                 </Button>
@@ -313,8 +343,9 @@ export const Navbar: React.FC = () => {
               Stay Signed In
             </Button>
             <Button
-              variant="danger"
+              variant="accent"
               size="sm"
+              className="shadow-limeGlow"
               onClick={async () => {
                 closeLogoutModal();
                 await handleLogout();
